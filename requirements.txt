@@ -1,0 +1,8 @@
+#Correr en CMD uvicorn backend.main:app --reload
+
+fastapi
+uvicorn
+jinja2
+pyodbc
+pydantic
+python-multipart
