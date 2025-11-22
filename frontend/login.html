@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <style>
+    body {
+      background-color: #f7f4f9;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .login-box {
+      background-color: #d3d5d0;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      text-align: center;
+      width: 300px;
+    }
+
+    .input-group {
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    label {
+      display: block;
+      text-align: left;
+      margin-bottom: 5px;
+      color: #333;
+      font-size: 14px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px 35px 10px 10px;
+      border: none;
+      border-bottom: 1px solid #333;
+      border-radius: 5px;
+      background-color: #e5e2e9;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .clear-btn {
+      position: absolute;
+      right: 10px;
+      top: 32px;
+      cursor: pointer;
+      color: #666;
+    }
+
+    button {
+      background-color: #d7d3e9;
+      border: none;
+      padding: 10px 25px;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 1em;
+      color: #333;
+      margin-top: 10px;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      background-color: #c6bde2;
+    }
+
+    #mensaje {
+      margin-top: 15px;
+      font-size: 0.9em;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-box">
+    <div class="input-group">
+      <label for="usuario">Usuario</label>
+      <input type="text" id="usuario" placeholder="Ingrese su usuario">
+      <span class="clear-btn" onclick="document.getElementById('usuario').value=''"></span>
+    </div>
+
+    <div class="input-group">
+      <label for="contrasenia">Contraseña</label>
+      <input type="password" id="contrasenia" placeholder="********">
+      <span class="clear-btn" onclick="document.getElementById('contrasenia').value=''"></span>
+    </div>
+
+    <button onclick="login()">Login</button>
+    <p id="mensaje"></p>
+  </div>
+
+  <script>
+    async function login() {
+    const usuario = document.getElementById("usuario").value;
+    const contrasenia = document.getElementById("contrasenia").value;
+    const mensaje = document.getElementById("mensaje");
+
+    if (!usuario || !contrasenia) {
+        mensaje.textContent = "Por favor, complete ambos campos.";
+        mensaje.style.color = "red";
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("username", usuario);   
+    formData.append("password", contrasenia);
+
+    try {
+        const response = await fetch("http://127.0.0.1:8000/api/login", {
+        method: "POST",
+        body: formData
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+        mensaje.style.color = "green";
+        mensaje.textContent = "Inicio de sesión exitoso ";
+
+        window.location.href = 'menu'
+
+        } else {
+        mensaje.style.color = "red";
+        mensaje.textContent = "Usuario o contraseña incorrectos ";
+        }
+    } catch (err) {
+        mensaje.style.color = "red";
+        mensaje.textContent = "Error al conectar con el servidor.";
+    }
+    }
+  </script>
+</body>
+</html>
