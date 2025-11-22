@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Insertar Empleado</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f7f2fa;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .container {
+      background-color: white;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      width: 500px;
+    }
+    
+    h2 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 30px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #333;
+      font-weight: 500;
+    }
+    
+    input[type="text"],
+    input[type="number"],
+    select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 14px;
+      box-sizing: border-box;
+      outline: none;
+    }
+    
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    select:focus {
+      border-color: #6b4fd3;
+    }
+    
+    .button-container {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      margin-top: 30px;
+    }
+    
+    button {
+      padding: 12px 30px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 500;
+      transition: background-color 0.3s;
+    }
+    
+    .btn-insertar {
+      background-color: #6b4fd3;
+      color: white;
+    }
+    
+    .btn-insertar:hover {
+      background-color: #543bb5;
+    }
+    
+    .btn-limpiar {
+      background-color: #e0e0e0;
+      color: #333;
+    }
+    
+    .btn-limpiar:hover {
+      background-color: #d0d0d0;
+    }
+    
+    .btn-regresar {
+      background-color: #333;
+      color: white;
+    }
+    
+    .btn-regresar:hover {
+      background-color: #1a1a1a;
+    }
+    
+    .error {
+      border-color: #ff4444 !important;
+    }
+    
+    .error-message {
+      color: #ff4444;
+      font-size: 12px;
+      margin-top: 5px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Insertar Empleado</h2>
+    
+    <form id="formEmpleado">
+      <div class="form-group">
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" name="nombre" placeholder="Ingrese el nombre" required>
+        <span class="error-message" id="errorNombre">Solo se permiten letras y espacios</span>
+      </div>
+      
+      <div class="form-group">
+        <label for="documentoIdentidad">Documento de Identidad:</label>
+        <input type="text" id="documentoIdentidad" name="documentoIdentidad" placeholder="Ingrese el documento" required>
+        <span class="error-message" id="errorDocumento">Solo se permiten números</span>
+      </div>
+      
+      <div class="form-group">
+        <label for="id">Id:</label>
+        <input type="text" id="id" name="id" placeholder="Ingrese el ID" required>
+        <span class="error-message" id="errorDocumento">Solo se permiten números</span>
+      </div>
+
+
+      <div class="form-group">
+        <label for="idPuesto">Puesto:</label>
+        <select id="idPuesto" name="idPuesto" required>
+          <option value="">Seleccione un puesto</option>
+        </select>
+      </div>
+      
+      <div class="button-container">
+        <button type="submit" class="btn-insertar">Insertar</button>
+        <button type="button" class="btn-limpiar" onclick="limpiarFormulario()">Limpiar</button>
+        <button type="button" class="btn-regresar" onclick="regresar()">Regresar</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    // Cargar puestos al iniciar la página
+    async function cargarPuestos() 
+    {
+      try {
+        const response = await fetch("http://127.0.0.1:8000/api/puestos");
+        const puestos = await response.json();
+        
+        const select = document.getElementById("idPuesto");
+        puestos.forEach(puesto => {
+          const option = document.createElement("option");
+          option.value = puesto.nombre;
+          option.textContent = puesto.nombre;
+          select.appendChild(option);
+        });
+      } catch (error) {
+        console.error("Error al cargar puestos:", error);
+        alert("Error al cargar los puestos");
+      }
+    }
+
+    document.getElementById("nombre").addEventListener("input", function(e) {
+      const valor = e.target.value;
+      const regex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/;
+      
+      if (!regex.test(valor)) {
+        e.target.classList.add("error");
+        document.getElementById("errorNombre").style.display = "block";
+        e.target.value = valor.slice(0, -1);
+      } else {
+        e.target.classList.remove("error");
+        document.getElementById("errorNombre").style.display = "none";
+      }
+    });
+
+
+    document.getElementById("documentoIdentidad").addEventListener("input", function(e) {
+      const valor = e.target.value;
+      const regex = /^[0-9]*$/;
+      
+      if (!regex.test(valor)) {
+        e.target.classList.add("error");
+        document.getElementById("errorDocumento").style.display = "block";
+        e.target.value = valor.slice(0, -1);
+      } else {
+        e.target.classList.remove("error");
+        document.getElementById("errorDocumento").style.display = "none";
+      }
+    });
+
+    document.getElementById("formEmpleado").addEventListener("submit", async function(e) 
+    {
+      e.preventDefault();
+      
+      const nombre = document.getElementById("nombre").value;
+      const documentoIdentidad = document.getElementById("documentoIdentidad").value;
+      const idPuesto = document.getElementById("idPuesto").value;
+      const id = parseInt(document.getElementById('id').value)
+      
+      if (!nombre || !documentoIdentidad || !idPuesto) {
+        alert("Por favor complete todos los campos");
+        return;
+      }
+      
+      try {
+
+        
+        // Construir la URL con todos los parámetros
+        const url = `http://127.0.0.1:8000/api/insertarUsuario?nombre=${encodeURIComponent(nombre)}&id=${id}&Puesto=${encodeURIComponent(idPuesto)}&valorDoc=${encodeURIComponent(documentoIdentidad)}`;
+        
+        console.log("URL a llamar:", url);
+        
+        const response = await fetch(url, {
+          method: "POST"
+        });
+        
+        console.log("Response status:", response.status);
+        
+        if (response.ok) {
+          alert("Empleado insertado exitosamente");
+          limpiarFormulario();
+        } else {
+          const responseText = await response.text();
+          console.log("Error response:", responseText);
+  
+        try {
+          const data = JSON.parse(responseText);
+          console.log("Error data:", data);  // Ver en consola
+          
+          // Mejorar el mensaje de error
+          if (data.detail) {
+            if (Array.isArray(data.detail)) {
+              // Error de validación de FastAPI
+              const errores = data.detail.map(e => e.msg).join('\n');
+              alert("Error al insertar:\n" + errores);
+            } else if (typeof data.detail === 'string') {
+              alert("Error al insertar: " + data.detail);
+            } else {
+              alert("Error al insertar: " + JSON.stringify(data.detail, null, 2));
+            }
+          } else {
+            alert("Error al insertar: " + JSON.stringify(data, null, 2));
+          }
+        } catch {
+          alert("Error al insertar: " + responseText);
+        }
+}
+      } catch (error) {
+        console.error("Error completo:", error);
+        alert("Error al insertar empleado: " + error.message);
+      }
+    }
+  );
+
+    function limpiarFormulario() 
+    {
+      document.getElementById("formEmpleado").reset();
+      document.querySelectorAll(".error").forEach(el => el.classList.remove("error"));
+      document.querySelectorAll(".error-message").forEach(el => el.style.display = "none");
+    }
+
+    function regresar() 
+    {
+      window.location.href = 'listaEmpleados'
+    }
+
+    function getName()
+    {
+      const queryString = window.location.search;
+      const urlParams = new URLSearchParams(queryString)
+      const nombre = urlParams.get('nombre')
+      return nombre
+    }
+
+
+    // Cargar puestos al cargar la página
+    cargarPuestos();
+  </script>
+</body>
+</html>
