@@ -1,8 +1,8 @@
 import pyodbc
 
 # Configura estos datos según tu servidor y base de datos
-SERVER = "25.39.62.157"  # Puede ser localhost\SQLEXPRESS
-DATABASE = "EmpresaDB"
+SERVER = "25.53.89.64"  # Puede ser localhost\SQLEXPRESS
+DATABASE = "MunicipalidadP3"
 USERNAME = "sa"  # Si usas autenticación SQL
 PASSWORD = "contrabases1234"  # Si usas autenticación SQL
 
@@ -123,4 +123,5 @@ def actualizacionEmpleado(docId, nombreViejo, nombre, idPuesto):
     
     conn.commit()
     conn.close()
+
     return {"message": "Empleado actualizado correctamente"}
