@@ -4,7 +4,7 @@ import pyodbc
 SERVER = "25.53.89.64"  # Puede ser localhost\SQLEXPRESS
 DATABASE = "MunicipalidadP3"
 USERNAME = "sa"  # Si usas autenticación SQL
-PASSWORD = "contrabases1234"  # Si usas autenticación SQL
+PASSWORD = "ContraBases123"  # Si usas autenticación SQL
 
 def obtener_conexion():
     conn = pyodbc.connect(
@@ -125,3 +125,4 @@ def actualizacionEmpleado(docId, nombreViejo, nombre, idPuesto):
     conn.close()
 
     return {"message": "Empleado actualizado correctamente"}
+
